@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumière — Signature Interior Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================
+   RESET & ROOT
+=========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --gold:        #B8965A;
+  --gold-lt:     #D4B07A;
+  --gold-pale:   #EDD9B8;
+  --cream:       #F7F3EE;
+  --warm-white:  #FDFAF6;
+  --charcoal:    #19170F;
+  --char-mid:    #2A271E;
+  --brown:       #6A5B48;
+  --brown-lt:    #9B8C7C;
+  --beige:       #E5D9CC;
+  --beige-dk:    #C8B9A7;
+  --sand:        #F0EAE1;
+  --serif:       'Cormorant Garamond', Georgia, serif;
+  --sans:        'DM Sans', system-ui, sans-serif;
+  --nav-h:       76px;
+  --max-w:       1240px;
+  --pad-x:       clamp(20px, 5vw, 80px);
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--warm-white);
+  color: var(--charcoal);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+img { display: block; width: 100%; height: 100%; object-fit: cover; }
+a { text-decoration: none; }
+ul { list-style: none; }
+input, button, textarea { font-family: var(--sans); }
+
+/* ===========================
+   SCROLL PROGRESS BAR
+=========================== */
+#spb {
+  position: fixed; top: 0; left: 0; z-index: 9999;
+  height: 2px; width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+  transition: width .1s linear;
+}
+
+/* ===========================
+   NAV
+=========================== */
+#nav {
+  position: fixed; top: 0; left: 0; width: 100%;
+  height: var(--nav-h);
+  z-index: 900;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--pad-x);
+  transition: background .45s ease, box-shadow .45s ease;
+}
+#nav.scrolled {
+  background: rgba(253,250,246,.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(184,150,90,.18);
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-size: 1.65rem; font-weight: 400;
+  letter-spacing: .06em;
+  color: #fff;
+  transition: color .4s;
+}
+#nav.scrolled .nav-logo { color: var(--charcoal); }
+
+.nav-links {
+  display: flex; align-items: center; gap: 2rem;
+}
+.nav-links a {
+  font-size: .72rem; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,.75);
+  position: relative;
+  transition: color .3s;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1px; background: var(--gold);
+  transition: width .35s;
+}
+.nav-links a:hover { color: #fff; }
+.nav-links a:hover::after { width: 100%; }
+#nav.scrolled .nav-links a { color: var(--brown); }
+#nav.scrolled .nav-links a:hover { color: var(--charcoal); }
+
+.nav-btn {
+  font-size: .7rem; letter-spacing: .15em; text-transform: uppercase;
+  padding: .55rem 1.5rem;
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 2px; color: rgba(255,255,255,.9);
+  transition: all .3s;
+}
+.nav-btn:hover { background: var(--gold); border-color: var(--gold); color: #fff; }
+#nav.scrolled .nav-btn { border-color: var(--gold); color: var(--gold); }
+#nav.scrolled .nav-btn:hover { background: var(--gold); color: #fff; }
+
+.ham {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: pointer; padding: 4px;
+}
+.ham span {
+  display: block; width: 24px; height: 1.5px;
+  background: #fff; border-radius: 2px; transition: all .35s;
+}
+#nav.scrolled .ham span { background: var(--charcoal); }
+.ham.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.ham.open span:nth-child(2) { opacity: 0; }
+.ham.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ===========================
+   MOBILE NAV DRAWER
+=========================== */
+.mob-drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 300px; max-width: 85vw;
+  background: var(--charcoal);
+  z-index: 1000;
+  transform: translateX(100%);
+  transition: transform .4s cubic-bezier(.4,0,.2,1);
+  padding: calc(var(--nav-h) + 2rem) 2.5rem 2.5rem;
+  display: flex; flex-direction: column; gap: 0;
+}
+.mob-drawer.open { transform: translateX(0); }
+.mob-drawer a {
+  font-size: 1.05rem; letter-spacing: .04em;
+  color: rgba(255,255,255,.65);
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  transition: color .3s;
+}
+.mob-drawer a:hover { color: var(--gold); }
+.mob-drawer a:last-child { border-bottom: none; }
+
+.mob-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.55);
+  z-index: 999; opacity: 0; pointer-events: none;
+  transition: opacity .35s;
+}
+.mob-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ===========================
+   HERO
+=========================== */
+#hero {
+  position: relative;
+  height: 100vh; min-height: 600px;
+  display: flex; align-items: flex-end;
+  padding-bottom: 80px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1600&dpr=1');
+  background-size: cover; background-position: center;
+  animation: hzoom 12s ease-out both;
+}
+@keyframes hzoom {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1); }
+}
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(20,17,10,.88) 0%,
+    rgba(20,17,10,.55) 55%,
+    rgba(20,17,10,.2) 100%
+  );
+}
+.hero-inner {
+  position: relative; z-index: 2;
+  width: 100%; padding: 0 var(--pad-x);
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 2rem;
+}
+.hero-left {
+  max-width: 620px;
+  animation: fadeup .9s .25s both;
+}
+@keyframes fadeup {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-tag {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .68rem; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1.2rem;
+}
+.hero-tag::before { content: ''; width: 30px; height: 1px; background: var(--gold); }
+
+.hero-h1 {
+  font-family: var(--serif);
+  font-size: clamp(2.8rem, 6.5vw, 5.4rem);
+  font-weight: 300; line-height: 1.06; letter-spacing: -.01em;
+  color: #fff; margin-bottom: 1.2rem;
+}
+.hero-h1 em { font-style: italic; color: var(--gold-lt); }
+
+.hero-p {
+  font-size: clamp(.88rem, 1.5vw, 1rem);
+  color: rgba(255,255,255,.6); max-width: 460px;
+  font-weight: 300; margin-bottom: 2.2rem;
+}
+.hero-actions { display: flex; gap: .9rem; flex-wrap: wrap; }
+
+.btn-gold {
+  display: inline-flex; align-items: center; gap: .5rem;
+  height: 52px; padding: 0 2rem;
+  background: var(--gold); color: #fff;
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  border-radius: 2px; border: 1px solid var(--gold);
+  transition: background .3s, transform .25s;
+}
+.btn-gold:hover { background: var(--gold-lt); transform: translateY(-2px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: .5rem;
+  height: 52px; padding: 0 2rem;
+  background: transparent; color: rgba(255,255,255,.85);
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  border-radius: 2px; border: 1px solid rgba(255,255,255,.3);
+  transition: border-color .3s, background .3s;
+}
+.btn-ghost:hover { border-color: var(--gold); background: rgba(184,150,90,.12); }
+
+.hero-stats {
+  display: flex; gap: 2.5rem;
+  animation: fadeup .9s .55s both;
+  flex-shrink: 0;
+}
+.hstat { text-align: center; }
+.hstat-num {
+  display: block; font-family: var(--serif);
+  font-size: 2.6rem; font-weight: 400;
+  color: var(--gold); line-height: 1;
+}
+.hstat-lbl {
+  display: block; font-size: .62rem; letter-spacing: .18em;
+  text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: .25rem;
+}
+
+.hero-scroll {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: .4rem;
+  cursor: pointer; z-index: 2;
+}
+.hero-scroll span { font-size: .6rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(255,255,255,.35); }
+.scroll-bar { width: 1px; height: 38px; background: rgba(184,150,90,.4); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:.35;} 50%{opacity:1;} }
+
+/* ===========================
+   TICKER
+=========================== */
+.ticker {
+  background: var(--charcoal);
+  padding: .75rem 0; overflow: hidden;
+  white-space: nowrap;
+}
+.ticker-track {
+  display: inline-flex; animation: tick 30s linear infinite;
+}
+.ticker-track span {
+  font-size: .67rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--brown-lt); padding: 0 2rem;
+}
+.ticker-track span.dot { color: var(--gold); padding: 0; }
+@keyframes tick {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ===========================
+   SECTION BASE
+=========================== */
+.sec {
+  padding: clamp(70px, 10vw, 110px) var(--pad-x);
+}
+.tag {
+  display: flex; align-items: center; gap: .6rem;
+  font-size: .67rem; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: .8rem;
+}
+.tag::before { content: ''; width: 22px; height: 1px; background: var(--gold); }
+.h2 {
+  font-family: var(--serif);
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
+  font-weight: 300; line-height: 1.1; letter-spacing: -.01em;
+  color: var(--charcoal);
+}
+.h2 em { font-style: italic; color: var(--gold); }
+.rule { width: 44px; height: 1px; background: var(--gold); margin: 1.3rem 0; }
+
+/* ===========================
+   ABOUT
+=========================== */
+#about { background: var(--cream); }
+.about-wrap {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
+}
+.about-imgs {
+  position: relative;
+}
+.about-main {
+  width: 100%; aspect-ratio: 4/5;
+  border-radius: 4px; overflow: hidden;
+}
+.about-accent {
+  position: absolute; bottom: -1.8rem; right: -1.8rem;
+  width: 52%; aspect-ratio: 1/1;
+  border-radius: 4px; overflow: hidden;
+  border: 6px solid var(--cream);
+  box-shadow: 0 18px 48px rgba(25,23,15,.12);
+}
+.about-text p {
+  font-size: .94rem; color: var(--brown); margin-bottom: 1.1rem; max-width: 480px;
+}
+.sig {
+  font-family: var(--serif); font-style: italic;
+  font-size: 2rem; font-weight: 400; color: var(--charcoal); margin-top: 2rem;
+}
+.sig small {
+  display: block; font-family: var(--sans); font-style: normal;
+  font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--gold); margin-top: .2rem;
+}
+
+/* ===========================
+   SERVICES
+=========================== */
+#services { background: var(--charcoal); }
+#services .h2 { color: #fff; }
+.srv-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin-top: 3rem;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 6px; overflow: hidden;
+  gap: 1px; background: rgba(255,255,255,.07);
+}
+.srv-card {
+  background: var(--charcoal);
+  padding: clamp(1.5rem, 3vw, 2.4rem);
+  position: relative; overflow: hidden;
+  transition: background .3s;
+}
+.srv-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 2px; height: 0; background: var(--gold);
+  transition: height .4s ease;
+}
+.srv-card:hover { background: #221e15; }
+.srv-card:hover::before { height: 100%; }
+.srv-no {
+  font-family: var(--serif); font-size: 2.4rem; font-weight: 300;
+  color: rgba(184,150,90,.2); line-height: 1; margin-bottom: .9rem;
+}
+.srv-title {
+  font-family: var(--serif); font-size: 1.25rem; font-weight: 400;
+  color: #fff; margin-bottom: .6rem;
+}
+.srv-desc { font-size: .83rem; color: rgba(255,255,255,.42); line-height: 1.65; }
+.srv-more {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .66rem; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--gold); margin-top: 1.1rem;
+  transition: gap .25s;
+}
+.srv-more:hover { gap: .65rem; }
+
+/* ===========================
+   PROJECTS
+=========================== */
+#projects { background: var(--warm-white); }
+.proj-head {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 1.5rem; margin-bottom: 3rem;
+}
+.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.flt {
+  font-size: .67rem; letter-spacing: .13em; text-transform: uppercase;
+  padding: .45rem 1.1rem; border-radius: 2px; cursor: pointer;
+  border: 1px solid var(--beige); background: transparent;
+  color: var(--brown-lt); transition: all .25s;
+}
+.flt:hover, .flt.on { background: var(--gold); color: #fff; border-color: var(--gold); }
+
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 320px;
+  gap: 1.2rem;
+}
+.pcard {
+  position: relative; overflow: hidden; border-radius: 4px;
+  cursor: pointer;
+}
+.pcard.span2 { grid-row: span 2; }
+.pcard img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .65s cubic-bezier(.25,.46,.45,.94);
+}
+.pcard:hover img { transform: scale(1.07); }
+.pcap {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(20,17,10,.85) 0%, transparent 52%);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 1.6rem; opacity: 0; transition: opacity .35s;
+}
+.pcard:hover .pcap { opacity: 1; }
+.pcap-cat { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-bottom: .25rem; }
+.pcap-name { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; color: #fff; }
+.pcap-loc { font-size: .76rem; color: rgba(255,255,255,.5); margin-top: .1rem; }
+
+/* ===========================
+   WHY US
+=========================== */
+#why { background: var(--sand); }
+.why-wrap {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(2.5rem, 6vw, 6rem); align-items: center;
+}
+.why-img-col { position: relative; }
+.why-main { width: 100%; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; }
+.why-badge {
+  position: absolute; top: 1.8rem; right: -1.5rem;
+  width: 108px; height: 108px; border-radius: 50%;
+  background: var(--gold); color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; box-shadow: 0 12px 36px rgba(184,150,90,.35);
+}
+.why-badge strong { font-family: var(--serif); font-size: 2rem; font-weight: 300; line-height: 1; }
+.why-badge small { font-size: .52rem; letter-spacing: .12em; text-transform: uppercase; margin-top: .2rem; line-height: 1.3; }
+
+.why-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.4rem; }
+.why-item { display: flex; gap: 1rem; align-items: flex-start; }
+.why-ico {
+  width: 42px; height: 42px; border-radius: 50%; flex-shrink: 0;
+  border: 1px solid var(--beige-dk);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .85rem; color: var(--gold);
+  transition: background .3s, border-color .3s;
+}
+.why-item:hover .why-ico { background: var(--gold); border-color: var(--gold); color: #fff; }
+.why-item-title { font-family: var(--serif); font-size: 1.08rem; font-weight: 400; color: var(--charcoal); margin-bottom: .2rem; }
+.why-item-p { font-size: .83rem; color: var(--brown); line-height: 1.65; }
+
+/* ===========================
+   AWARDS
+=========================== */
+#awards { background: var(--charcoal); padding: clamp(60px,8vw,90px) var(--pad-x); }
+.aw-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 3rem; }
+.aw-left { max-width: 320px; }
+.aw-left .h2 { color: #fff; font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.aw-tiles { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+.atile {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07);
+  border-radius: 4px; padding: 1.3rem 1.7rem; text-align: center; min-width: 142px;
+  transition: border-color .3s, background .3s;
+}
+.atile:hover { border-color: rgba(184,150,90,.4); background: rgba(184,150,90,.06); }
+.atile-yr { font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); }
+.atile-name { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; color: #fff; margin: .3rem 0; }
+.atile-org { font-size: .7rem; color: rgba(255,255,255,.3); letter-spacing: .06em; }
+
+/* ===========================
+   PROCESS
+=========================== */
+#process { background: var(--cream); }
+.proc-head { text-align: center; max-width: 520px; margin: 0 auto 4rem; }
+.proc-head .tag { justify-content: center; }
+.proc-head .h2 { text-align: center; }
+.proc-head .rule { margin: 1.3rem auto; }
+.proc-head p { font-size: .9rem; color: var(--brown); }
+
+.proc-steps {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 2rem; position: relative;
+}
+.proc-steps::before {
+  content: ''; position: absolute;
+  top: 27px; left: 8%; right: 8%;
+  height: 1px; background: var(--beige-dk);
+  z-index: 0;
+}
+.pstep {
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative; z-index: 1;
+}
+.pstep-num {
+  width: 54px; height: 54px; border-radius: 50%;
+  background: var(--warm-white); border: 1px solid var(--beige-dk);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif); font-size: 1.3rem; font-weight: 400;
+  color: var(--gold); margin-bottom: 1.1rem;
+  transition: background .3s, border-color .3s, color .3s;
+}
+.pstep:hover .pstep-num { background: var(--gold); border-color: var(--gold); color: #fff; }
+.pstep-title { font-family: var(--serif); font-size: .98rem; font-weight: 400; color: var(--charcoal); margin-bottom: .35rem; }
+.pstep-p { font-size: .78rem; color: var(--brown-lt); line-height: 1.55; }
+
+/* ===========================
+   TESTIMONIALS
+=========================== */
+#testimonials { background: var(--warm-white); }
+.tst-head { text-align: center; max-width: 460px; margin: 0 auto 3.5rem; }
+.tst-head .tag { justify-content: center; }
+.tst-head .h2 { text-align: center; }
+.tst-head .rule { margin: 1.3rem auto; }
+.tst-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+.tcard {
+  background: var(--cream); border: 1px solid var(--beige);
+  border-radius: 4px; padding: 2rem;
+  transition: box-shadow .35s, transform .35s;
+}
+.tcard:hover { box-shadow: 0 20px 50px rgba(25,23,15,.07); transform: translateY(-4px); }
+.tcard-stars { color: var(--gold); font-size: .85rem; letter-spacing: .1em; margin-bottom: .8rem; }
+.tcard-q { font-family: var(--serif); font-size: 3rem; color: var(--gold); line-height: .5; margin-bottom: .8rem; }
+.tcard-text { font-family: var(--serif); font-style: italic; font-size: .95rem; color: var(--brown); line-height: 1.7; }
+.tcard-rule { width: 30px; height: 1px; background: var(--gold); margin: 1.1rem 0; }
+.tcard-name { font-size: .78rem; font-weight: 500; color: var(--charcoal); }
+.tcard-loc { font-size: .7rem; color: var(--brown-lt); margin-top: .1rem; }
+
+/* ===========================
+   CTA SECTION
+=========================== */
+#cta {
+  position: relative; overflow: hidden;
+  min-height: 500px; display: flex; align-items: center;
+}
+.cta-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=1600&dpr=1');
+  background-size: cover; background-position: center;
+}
+.cta-ov { position: absolute; inset: 0; background: rgba(20,17,10,.75); }
+.cta-inner {
+  position: relative; z-index: 2;
+  max-width: 620px; padding: clamp(60px,8vw,100px) var(--pad-x);
+}
+.cta-inner .h2 { color: #fff; margin-bottom: .8rem; }
+.cta-inner p { font-size: .94rem; color: rgba(255,255,255,.58); margin-bottom: 2rem; }
+.cta-form { display: flex; flex-direction: column; gap: 10px; max-width: 420px; }
+.cta-inp {
+  width: 100%; height: 52px;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.2);
+  border-radius: 4px; padding: 0 1.1rem; color: #fff;
+  font-size: .85rem; outline: none;
+  transition: border-color .3s;
+}
+.cta-inp::placeholder { color: rgba(255,255,255,.32); }
+.cta-inp:focus { border-color: var(--gold); }
+.cta-sub {
+  width: 100%; height: 52px; padding: 0 2rem;
+  background: var(--gold); color: #fff;
+  border: none; border-radius: 4px; cursor: pointer;
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  transition: background .3s, transform .25s;
+}
+.cta-sub:hover { background: var(--gold-lt); transform: translateY(-2px); }
+.cta-note { font-size: .72rem; color: rgba(255,255,255,.28); margin-top: .7rem; }
+.cta-note a { color: var(--gold-lt); }
+
+/* ===========================
+   FOOTER
+=========================== */
+footer { background: #0E0C07; padding: clamp(50px,7vw,80px) var(--pad-x) 2rem; }
+.ft-grid {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1.2fr;
+  gap: 3rem; padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 1.8rem;
+}
+.ft-brand-logo {
+  font-family: var(--serif); font-size: 1.9rem; font-weight: 400;
+  color: #fff; letter-spacing: .06em; display: block; margin-bottom: .9rem;
+}
+.ft-brand-p { font-size: .82rem; color: rgba(255,255,255,.32); line-height: 1.72; max-width: 280px; }
+.ft-socials { display: flex; gap: .6rem; margin-top: 1.5rem; }
+.ftsoc {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.1);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.35); font-size: .8rem; font-family: var(--serif);
+  transition: border-color .3s, color .3s;
+}
+.ftsoc:hover { border-color: var(--gold); color: var(--gold); }
+.ft-col h4 {
+  font-size: .67rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 1.2rem;
+}
+.ft-col li { margin-bottom: .6rem; }
+.ft-col a { font-size: .82rem; color: rgba(255,255,255,.38); transition: color .3s; }
+.ft-col a:hover { color: rgba(255,255,255,.85); }
+.ft-col address { font-style: normal; font-size: .82rem; color: rgba(255,255,255,.38); line-height: 1.72; }
+.ft-col address a { color: rgba(255,255,255,.38); }
+.ft-col address a:hover { color: var(--gold-lt); }
+.ft-bottom {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .8rem;
+}
+.ft-copy { font-size: .7rem; color: rgba(255,255,255,.2); }
+
+/* ===========================
+   SCROLL REVEAL
+=========================== */
+.reveal {
+  opacity: 0; transform: translateY(26px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-l {
+  opacity: 0; transform: translateX(-28px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal-l.visible { opacity: 1; transform: none; }
+.reveal-r {
+  opacity: 0; transform: translateX(28px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal-r.visible { opacity: 1; transform: none; }
+
+/* ===========================
+   RESPONSIVE
+=========================== */
+@media (max-width: 1024px) {
+  .about-wrap, .why-wrap { grid-template-columns: 1fr; gap: 3rem; }
+  .about-main, .why-main { aspect-ratio: 16/9; }
+  .about-accent { display: none; }
+  .srv-grid { grid-template-columns: repeat(2, 1fr); }
+  .proc-steps { grid-template-columns: repeat(3, 1fr); }
+  .proc-steps::before { display: none; }
+  .tst-grid { grid-template-columns: repeat(2, 1fr); }
+  .ft-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .proj-grid { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 260px; }
+  .pcard.span2 { grid-row: span 1; }
+  .hero-stats { display: none; }
+}
+@media (max-width: 768px) {
+  :root { --nav-h: 68px; }
+  .nav-links, .nav-btn { display: none; }
+  .ham { display: flex; }
+  .hero-h1 { font-size: 2.5rem; }
+  .srv-grid { grid-template-columns: 1fr; }
+  .proc-steps { grid-template-columns: repeat(2, 1fr); }
+  .tst-grid { grid-template-columns: 1fr; }
+  .aw-row { flex-direction: column; align-items: flex-start; }
+  .aw-tiles { justify-content: flex-start; }
+  .ft-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .why-badge { right: .8rem; top: .8rem; width: 82px; height: 82px; }
+  .why-badge strong { font-size: 1.5rem; }
+  .proj-grid { grid-template-columns: 1fr; grid-auto-rows: 240px; }
+}
+@media (max-width: 480px) {
+  .hero-actions { flex-direction: column; }
+  .btn-gold, .btn-ghost { width: 100%; justify-content: center; }
+  .proc-steps { grid-template-columns: 1fr; }
+
+  .aw-tiles { gap: .7rem; }
+  .atile { min-width: 120px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Scroll Progress -->
+<div id="spb"></div>
+
+<!-- ===================== NAV ===================== -->
+<header id="nav">
+  <a href="#" class="nav-logo">Lumière</a>
+  <nav class="nav-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#projects">Projects</a>
+    <a href="#process">Process</a>
+    <a href="#testimonials">Stories</a>
+  </nav>
+  <a href="#cta" class="nav-btn">Book Consultation</a>
+  <button class="ham" id="ham" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- Mobile Drawer -->
+<div class="mob-overlay" id="mob-ov"></div>
+<div class="mob-drawer" id="mob-drawer">
+  <a href="#about"         class="mlink">About</a>
+  <a href="#services"      class="mlink">Services</a>
+  <a href="#projects"      class="mlink">Projects</a>
+  <a href="#process"       class="mlink">Process</a>
+  <a href="#testimonials"  class="mlink">Stories</a>
+  <a href="#cta"           class="mlink">Book Consultation</a>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">Luxury Interior Studio</div>
+      <h1 class="hero-h1">
+        Spaces That<br>
+        Tell Your <em>Story</em>
+      </h1>
+      <p class="hero-p">We craft interiors that breathe luxury, warmth, and intention — for discerning homeowners who believe beauty and budget can coexist.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-gold">View Our Work &nbsp;→</a>
+        <a href="#cta"      class="btn-ghost">Book Consultation</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat">
+        <span class="hstat-num" data-target="7">0</span>
+        <span class="hstat-lbl">Years Studio</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num" data-target="240">0</span>
+        <span class="hstat-lbl">Projects Done</span>
+      </div>
+      <div class="hstat">
+        <span class="hstat-num" data-target="98">0</span>
+        <span class="hstat-lbl">% Client Joy</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll" onclick="scrollTo({top:window.innerHeight,behavior:'smooth'})">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- ===================== TICKER ===================== -->
+<div class="ticker">
+  <div class="ticker-track" id="tt">
+    <span>Villa Interiors</span><span class="dot">✦</span>
+    <span>Penthouse Design</span><span class="dot">✦</span>
+    <span>Bungalow Styling</span><span class="dot">✦</span>
+    <span>Concept to Completion</span><span class="dot">✦</span>
+    <span>Bespoke Furniture</span><span class="dot">✦</span>
+    <span>Material Curation</span><span class="dot">✦</span>
+    <span>Lighting Design</span><span class="dot">✦</span>
+    <span>Spatial Planning</span><span class="dot">✦</span>
+    <span>Villa Interiors</span><span class="dot">✦</span>
+    <span>Penthouse Design</span><span class="dot">✦</span>
+    <span>Bungalow Styling</span><span class="dot">✦</span>
+    <span>Concept to Completion</span><span class="dot">✦</span>
+    <span>Bespoke Furniture</span><span class="dot">✦</span>
+    <span>Material Curation</span><span class="dot">✦</span>
+    <span>Lighting Design</span><span class="dot">✦</span>
+    <span>Spatial Planning</span><span class="dot">✦</span>
+  </div>
+</div>
+
+<!-- ===================== ABOUT ===================== -->
+<section id="about" class="sec">
+  <div class="about-wrap">
+    <!-- Images -->
+    <div class="about-imgs reveal-l">
+      <div class="about-main">
+        <img src="https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg?auto=compress&cs=tinysrgb&w=900&dpr=1" alt="Elegant living room interior" loading="lazy">
+      </div>
+      <div class="about-accent">
+        <img src="https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=600&dpr=1" alt="Bedroom detail" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Text -->
+    <div class="about-text reveal-r">
+      <div class="tag">Our Story</div>
+      <h2 class="h2">Born from a <em>Passion</em><br>for Refined Living</h2>
+      <div class="rule"></div>
+      <p>Lumière Interior Studio was founded on a simple belief: every home deserves to feel extraordinary. We work at the intersection of architecture, artistry, and lifestyle — translating your vision into spaces that are both beautiful and deeply personal.</p>
+      <p>With over seven years and 240+ completed residences across Mumbai, Pune, and beyond, our studio has earned a reputation for meticulous craftsmanship, thoughtful material selection, and an unfailing eye for proportion and light.</p>
+      <p>We never start with a template. We start with you.</p>
+      <div class="sig">
+        Priya Mehta
+        <small>Founder &amp; Principal Designer</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SERVICES ===================== -->
+<section id="services" class="sec">
+  <div class="reveal">
+    <div class="tag">What We Do</div>
+    <h2 class="h2" style="color:#fff">Full-Spectrum <em>Design</em><br>Tailored to Your Space</h2>
+  </div>
+
+  <div class="srv-grid">
+    <div class="srv-card">
+      <span class="srv-no">01</span>
+      <div class="srv-title">Penthouse Interiors</div>
+      <p class="srv-desc">Elevated living redefined. We design ultra-premium penthouse environments where architecture, art, and lifestyle converge in perfect harmony.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+    <div class="srv-card">
+      <span class="srv-no">02</span>
+      <div class="srv-title">Villa &amp; Bungalow</div>
+      <p class="srv-desc">Expansive residences handled with spatial intelligence — each room considered for flow, material harmony, and the rhythm of daily family life.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+    <div class="srv-card">
+      <span class="srv-no">03</span>
+      <div class="srv-title">Bespoke Styling</div>
+      <p class="srv-desc">From furniture curation to art placement, we refine every element to create an environment with an unmistakable personal character.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+    <div class="srv-card">
+      <span class="srv-no">04</span>
+      <div class="srv-title">Concept to Completion</div>
+      <p class="srv-desc">End-to-end project delivery. We manage design, procurement, contractors, and handover — you simply move into a finished masterpiece.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+    <div class="srv-card">
+      <span class="srv-no">05</span>
+      <div class="srv-title">Lighting Design</div>
+      <p class="srv-desc">Lighting defines atmosphere. Our bespoke lighting schemes sculpt how your home feels at every hour of the day and evening.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+    <div class="srv-card">
+      <span class="srv-no">06</span>
+      <div class="srv-title">Full Consultancy</div>
+      <p class="srv-desc">Expert guidance for new builds, renovations, and developer projects. Premium outcomes, realistic budgets, on-time delivery.</p>
+      <a href="#cta" class="srv-more">Enquire &nbsp;→</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROJECTS ===================== -->
+<section id="projects" class="sec">
+  <div class="proj-head">
+    <div class="reveal">
+      <div class="tag">Portfolio</div>
+      <h2 class="h2">Featured <em>Projects</em></h2>
+    </div>
+    <div class="filters reveal">
+      <button class="flt on"  data-f="all">All</button>
+      <button class="flt"     data-f="penthouse">Penthouse</button>
+      <button class="flt"     data-f="villa">Villa</button>
+      <button class="flt"     data-f="bungalow">Bungalow</button>
+    </div>
+  </div>
+
+  <div class="proj-grid">
+    <div class="pcard span2" data-type="penthouse">
+      <img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=900&dpr=1" alt="Penthouse living room" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Penthouse</div>
+        <div class="pcap-name">The Altitude Residence</div>
+        <div class="pcap-loc">Worli, Mumbai</div>
+      </div>
+    </div>
+    <div class="pcard" data-type="villa">
+      <img src="https://images.pexels.com/photos/2062426/pexels-photo-2062426.jpeg?auto=compress&cs=tinysrgb&w=700&dpr=1" alt="Villa living room" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Villa</div>
+        <div class="pcap-name">Casa Serena</div>
+        <div class="pcap-loc">Juhu, Mumbai</div>
+      </div>
+    </div>
+    <div class="pcard" data-type="bungalow">
+      <img src="https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=700&dpr=1" alt="Bungalow interior" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Bungalow</div>
+        <div class="pcap-name">The Rosewood Home</div>
+        <div class="pcap-loc">Bandra, Mumbai</div>
+      </div>
+    </div>
+    <div class="pcard" data-type="penthouse">
+      <img src="https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg?auto=compress&cs=tinysrgb&w=700&dpr=1" alt="Modern penthouse bedroom" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Penthouse</div>
+        <div class="pcap-name">Sky Suite 42</div>
+        <div class="pcap-loc">Lower Parel, Mumbai</div>
+      </div>
+    </div>
+    <div class="pcard span2" data-type="villa">
+      <img src="https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=900&dpr=1" alt="Villa dining room" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Villa</div>
+        <div class="pcap-name">Amber Courtyard</div>
+        <div class="pcap-loc">Alibaug, Maharashtra</div>
+      </div>
+    </div>
+    <div class="pcard" data-type="bungalow">
+      <img src="https://images.pexels.com/photos/1743229/pexels-photo-1743229.jpeg?auto=compress&cs=tinysrgb&w=700&dpr=1" alt="Bungalow kitchen" loading="lazy">
+      <div class="pcap">
+        <div class="pcap-cat">Bungalow</div>
+        <div class="pcap-name">The Garden Residence</div>
+        <div class="pcap-loc">Pune</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== WHY US ===================== -->
+<section id="why" class="sec">
+  <div class="why-wrap">
+    <div class="why-img-col reveal-l">
+      <div class="why-main">
+        <img src="https://images.pexels.com/photos/3356416/pexels-photo-3356416.jpeg?auto=compress&cs=tinysrgb&w=900&dpr=1" alt="Premium interior by Lumière" loading="lazy">
+      </div>
+      <div class="why-badge">
+        <strong>7+</strong>
+        <small>Years of<br>Excellence</small>
+      </div>
+    </div>
+
+    <div class="reveal-r">
+      <div class="tag">Why Lumière</div>
+      <h2 class="h2">Design That <em>Endures</em>,<br>Service That Cares</h2>
+      <div class="rule"></div>
+      <div class="why-list">
+        <div class="why-item">
+          <div class="why-ico">✦</div>
+          <div>
+            <div class="why-item-title">Finest Quality Materials</div>
+            <p class="why-item-p">Every material is sourced with intent — from Italian marble to hand-woven textiles. Quality that you feel, not just see.</p>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-ico">◎</div>
+          <div>
+            <div class="why-item-title">Client-Centric Approach</div>
+            <p class="why-item-p">Your lifestyle, preferences, and budget are the blueprint. We listen before we design, and never compromise on what matters most.</p>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-ico">▲</div>
+          <div>
+            <div class="why-item-title">Budget-Conscious Luxury</div>
+            <p class="why-item-p">Premium doesn't have to be unaffordable. We maximise value through smart sourcing and precise project management.</p>
+          </div>
+        </div>
+        <div class="why-item">
+          <div class="why-ico">✧</div>
+          <div>
+            <div class="why-item-title">Detail-Driven Execution</div>
+            <p class="why-item-p">From architectural mouldings to the placement of a lamp — we obsess over every detail so you never have to.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== AWARDS ===================== -->
+<section id="awards">
+  <div class="aw-row">
+    <div class="aw-left reveal">
+      <div class="tag">Recognition</div>
+      <h2 class="h2">Honoured by the <em>Industry</em></h2>
+    </div>
+    <div class="aw-tiles reveal">
+      <div class="atile">
+        <div class="atile-yr">2024</div>
+        <div class="atile-name">Best Interior Studio</div>
+        <div class="atile-org">India Design Forum</div>
+      </div>
+      <div class="atile">
+        <div class="atile-yr">2023</div>
+        <div class="atile-name">Residential Excellence</div>
+        <div class="atile-org">Design Week Awards</div>
+      </div>
+      <div class="atile">
+        <div class="atile-yr">2022</div>
+        <div class="atile-name">Client Choice Gold</div>
+        <div class="atile-org">Houzz India</div>
+      </div>
+      <div class="atile">
+        <div class="atile-yr">2021</div>
+        <div class="atile-name">Rising Studio</div>
+        <div class="atile-org">Architectural Digest</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PROCESS ===================== -->
+<section id="process" class="sec">
+  <div class="proc-head reveal">
+    <div class="tag">Our Method</div>
+    <h2 class="h2">A Thoughtful <em>Process</em>,<br>Start to Finish</h2>
+    <div class="rule"></div>
+    <p>Every great interior begins with understanding. Here is how we take your space from blank canvas to finished masterpiece.</p>
+  </div>
+
+  <div class="proc-steps">
+    <div class="pstep reveal" style="--d:.0s">
+      <div class="pstep-num">01</div>
+      <div class="pstep-title">Discovery</div>
+      <p class="pstep-p">A deep conversation about your lifestyle, tastes, and vision for the space.</p>
+    </div>
+    <div class="pstep reveal" style="--d:.1s">
+      <div class="pstep-num">02</div>
+      <div class="pstep-title">Concept</div>
+      <p class="pstep-p">Mood boards, colour palettes, and spatial layouts crafted around your vision.</p>
+    </div>
+    <div class="pstep reveal" style="--d:.2s">
+      <div class="pstep-num">03</div>
+      <div class="pstep-title">Refinement</div>
+      <p class="pstep-p">Materials, furnishings, and lighting refined until the concept is perfect.</p>
+    </div>
+    <div class="pstep reveal" style="--d:.3s">
+      <div class="pstep-num">04</div>
+      <div class="pstep-title">Execution</div>
+      <p class="pstep-p">Certified contractors bring the design to life with precision craftsmanship.</p>
+    </div>
+    <div class="pstep reveal" style="--d:.4s">
+      <div class="pstep-num">05</div>
+      <div class="pstep-title">Handover</div>
+      <p class="pstep-p">Your completed home — dressed, styled, and ready to walk into and love.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== TESTIMONIALS ===================== -->
+<section id="testimonials" class="sec">
+  <div class="tst-head reveal">
+    <div class="tag">Client Stories</div>
+    <h2 class="h2">Words from <em>Happy Homes</em></h2>
+    <div class="rule"></div>
+  </div>
+
+  <div class="tst-grid">
+    <div class="tcard reveal">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-q">"</div>
+      <p class="tcard-text">Lumière transformed our Worli penthouse into something we could never have imagined on our own. Every morning we wake up feeling like we live in a five-star suite. The attention to detail is extraordinary.</p>
+      <div class="tcard-rule"></div>
+      <div class="tcard-name">Rahul &amp; Sneha Kapoor</div>
+      <div class="tcard-loc">Penthouse, Worli Mumbai</div>
+    </div>
+    <div class="tcard reveal" style="transition-delay:.12s">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-q">"</div>
+      <p class="tcard-text">Working with Priya and the team was effortless. They respected our budget, understood our aesthetic immediately, and delivered a home that is warm, timeless, and uniquely ours.</p>
+      <div class="tcard-rule"></div>
+      <div class="tcard-name">Ananya Iyer</div>
+      <div class="tcard-loc">Villa, Juhu Mumbai</div>
+    </div>
+    <div class="tcard reveal" style="transition-delay:.24s">
+      <div class="tcard-stars">★★★★★</div>
+      <div class="tcard-q">"</div>
+      <p class="tcard-text">The process was seamless from day one. We were nervous about a full renovation, but Lumière made it feel easy. The result exceeded every expectation — our home now looks like it belongs in a magazine.</p>
+      <div class="tcard-rule"></div>
+      <div class="tcard-name">Dev Malhotra</div>
+      <div class="tcard-loc">Bungalow, Bandra Mumbai</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA ===================== -->
+<section id="cta">
+  <div class="cta-bg"></div>
+  <div class="cta-ov"></div>
+  <div class="cta-inner">
+    <div class="tag" style="color:var(--gold-lt)">Start Your Journey</div>
+    <h2 class="h2">Let's Create Your <em>Dream Space</em> Together</h2>
+    <p>Share your details and our studio will reach out within 24 hours to schedule a complimentary consultation. No commitment required.</p>
+    <div class="cta-form">
+      <input id="cta-name"  type="text" class="cta-inp" placeholder="Your Name">
+      <input id="cta-phone" type="tel"  class="cta-inp" placeholder="Phone Number">
+      <button class="cta-sub" onclick="submitCta()">Request Consultation</button>
+    </div>
+    <p class="cta-note">Or call us: <a href="tel:+912245678900">+91 22 4567 8900</a></p>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="ft-grid">
+    <div>
+      <span class="ft-brand-logo">Lumière</span>
+      <p class="ft-brand-p">A premium interior studio crafting extraordinary living environments across Mumbai, Pune, and beyond. Where your vision becomes your home.</p>
+      <div class="ft-socials">
+        <a href="#" class="ftsoc" aria-label="Instagram">&#9671;</a>
+        <a href="#" class="ftsoc" aria-label="Pinterest">&#9678;</a>
+        <a href="#" class="ftsoc" aria-label="Houzz">&#9675;</a>
+        <a href="#" class="ftsoc" aria-label="LinkedIn">&#9679;</a>
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Penthouse Interiors</a></li>
+        <li><a href="#services">Villa Design</a></li>
+        <li><a href="#services">Bungalow Styling</a></li>
+        <li><a href="#services">Bespoke Furniture</a></li>
+        <li><a href="#services">Concept to Completion</a></li>
+        <li><a href="#services">Lighting Design</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Studio</h4>
+      <ul>
+        <li><a href="#about">About Lumière</a></li>
+        <li><a href="#projects">Our Portfolio</a></li>
+        <li><a href="#process">Design Process</a></li>
+        <li><a href="#awards">Awards</a></li>
+        <li><a href="#testimonials">Client Stories</a></li>
+        <li><a href="#cta">Book Consultation</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>Contact</h4>
+      <address>
+        Studio 12, The Design Hub,<br>
+        Parel, Mumbai 400012<br><br>
+        <a href="tel:+912245678900">+91 22 4567 8900</a><br>
+        <a href="mailto:hello@lumiere.studio">hello@lumiere.studio</a>
+      </address>
+    </div>
+  </div>
+  <div class="ft-bottom">
+    <span class="ft-copy">© <span id="cy">2025</span> Lumière Interior Studio. All rights reserved.</span>
+    <span class="ft-copy">Privacy Policy &nbsp;·&nbsp; Terms of Service</span>
+  </div>
+</footer>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script>
+// Scroll progress bar
+window.addEventListener('scroll', function() {
+  var pct = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('spb').style.width = pct + '%';
+}, { passive: true });
+
+// Nav scroll state
+var navEl = document.getElementById('nav');
+window.addEventListener('scroll', function() {
+  navEl.classList.toggle('scrolled', window.scrollY > 50);
+}, { passive: true });
+
+// Mobile menu
+var hamBtn    = document.getElementById('ham');
+var drawer    = document.getElementById('mob-drawer');
+var mobOv     = document.getElementById('mob-ov');
+
+function openMenu() {
+  drawer.classList.add('open');
+  mobOv.classList.add('open');
+  hamBtn.classList.add('open');
+}
+function closeMenu() {
+  drawer.classList.remove('open');
+  mobOv.classList.remove('open');
+  hamBtn.classList.remove('open');
+}
+hamBtn.addEventListener('click', function() {
+  drawer.classList.contains('open') ? closeMenu() : openMenu();
+});
+mobOv.addEventListener('click', closeMenu);
+document.querySelectorAll('.mlink').forEach(function(l) {
+  l.addEventListener('click', closeMenu);
+});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+  a.addEventListener('click', function(e) {
+    var id = this.getAttribute('href');
+    if (id === '#') return;
+    var t = document.querySelector(id);
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+
+// Scroll reveal
+var revEls = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
+function checkReveal() {
+  var wh = window.innerHeight;
+  revEls.forEach(function(el) {
+    var r = el.getBoundingClientRect();
+    if (r.top < wh * .9) el.classList.add('visible');
+  });
+}
+window.addEventListener('scroll', checkReveal, { passive: true });
+window.addEventListener('resize', checkReveal);
+checkReveal();
+
+// Stat counters — fire once when hero-stats comes into view
+var counted = false;
+var statEls = document.querySelectorAll('[data-target]');
+
+function runCounters() {
+  if (counted) return;
+  var r = statEls[0] && statEls[0].getBoundingClientRect();
+  if (!r || r.top > window.innerHeight) return;
+  counted = true;
+  statEls.forEach(function(el) {
+    var target = parseInt(el.dataset.target, 10);
+    var suffix = target <= 100 ? '+' : '+';
+    var start  = 0;
+    var dur    = 1800;
+    var s      = performance.now();
+    function step(ts) {
+      var p = Math.min((ts - s) / dur, 1);
+      var ease = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(ease * target) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+}
+window.addEventListener('scroll', runCounters, { passive: true });
+runCounters();
+
+// Dynamic year
+document.getElementById('cy').textContent = new Date().getFullYear();
+
+// Project filter
+document.querySelectorAll('.flt').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.flt').forEach(function(b) { b.classList.remove('on'); });
+    this.classList.add('on');
+    var f = this.dataset.f;
+    document.querySelectorAll('.pcard').forEach(function(card) {
+      var show = f === 'all' || card.dataset.type === f;
+      card.style.opacity    = show ? '1' : '0';
+      card.style.transform  = show ? 'scale(1)' : 'scale(.96)';
+      card.style.pointerEvents = show ? '' : 'none';
+      card.style.transition = 'opacity .35s, transform .35s';
+      if (!show) {
+        setTimeout(function() {
+          if (card.style.opacity === '0') card.style.visibility = 'hidden';
+        }, 360);
+      } else {
+        card.style.visibility = '';
+      }
+    });
+  });
+});
+
+// CTA form
+function submitCta() {
+  var nm = document.getElementById('cta-name').value.trim();
+  var ph = document.getElementById('cta-phone').value.trim();
+  if (!nm) { document.getElementById('cta-name').focus(); return; }
+  if (!ph) { document.getElementById('cta-phone').focus(); return; }
+  var btn = document.querySelector('.cta-sub');
+  btn.textContent = '✓ Request Received!';
+  btn.style.background = '#5a8a60';
+  btn.disabled = true;
+  document.getElementById('cta-name').value  = '';
+  document.getElementById('cta-phone').value = '';
+  setTimeout(function() {
+    btn.textContent = 'Request Consultation';
+    btn.style.background = '';
+    btn.disabled = false;
+  }, 4000);
+}
+</script>
+
+</body>
+</html>
